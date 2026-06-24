@@ -29,6 +29,7 @@ namespace comercializadora_api.Security
                 new("idRol", sesion.IdRol.ToString()),
                 new("idSucursal", sesion.IdSucursal.ToString()),
                 new("idAlmacen", sesion.IdAlmacen.ToString()),
+                new("idEstacion", sesion.IdEstacion.ToString()),
                 new("usuario", sesion.Usuario ?? string.Empty),
                 new("nombre", sesion.Nombre ?? string.Empty),
             };

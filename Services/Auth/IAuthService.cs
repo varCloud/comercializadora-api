@@ -1,7 +1,7 @@
 using comercializadora_api.Models.Auth;
 using comercializadora_api.Models.Common;
 
-namespace comercializadora_api.Services
+namespace comercializadora_api.Services.Auth
 {
     /// <summary>Reglas de negocio de autenticación: valida credenciales y emite el JWT.</summary>
     public interface IAuthService

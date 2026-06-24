@@ -71,15 +71,23 @@ Regla de dependencia: cada capa solo conoce la inmediatamente inferior, siempre 
 comercializadora-api/
 ├── Controllers/                 # endpoints HTTP
 ├── Services/
-│   ├── IClientesService.cs
-│   └── ClientesService.cs
+│   ├── Auth/                    # carpeta por feature
+│   │   ├── IAuthService.cs
+│   │   └── AuthService.cs
+│   └── Usuarios/
+│       ├── IUsuariosService.cs
+│       └── UsuariosService.cs
 ├── Repositories/
-│   ├── Base/
+│   ├── Base/                    # infraestructura compartida (no es feature)
 │   │   ├── IDbConnectionFactory.cs
 │   │   ├── SqlConnectionFactory.cs
 │   │   └── BaseRepository.cs
-│   ├── IClientesRepository.cs
-│   └── ClientesRepository.cs
+│   ├── Auth/                    # carpeta por feature
+│   │   ├── IAuthRepository.cs
+│   │   └── AuthRepository.cs
+│   └── Usuarios/
+│       ├── IUsuariosRepository.cs
+│       └── UsuariosRepository.cs
 ├── Models/
 │   ├── Entities/                # entidades que mapean resultados de SP
 │   ├── Dtos/                    # request/response de la API
@@ -87,6 +95,12 @@ comercializadora-api/
 │       └── Notificacion.cs      # envoltorio estándar status/mensaje/modelo
 └── Program.cs                   # registro de DI
 ```
+
+> **Convención de organización (carpetas por feature):** `Repositories/` y `Services/` se
+> organizan en **una carpeta por feature** (`Auth/`, `Usuarios/`, …) con su interfaz + su
+> implementación dentro. El **namespace sigue a la carpeta**
+> (`comercializadora_api.Repositories.Usuarios`, `comercializadora_api.Services.Usuarios`).
+> `Repositories/Base/` es infraestructura compartida, no una feature.
 
 ## 5. Piezas base
 

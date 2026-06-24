@@ -1,6 +1,6 @@
 using comercializadora_api.Models.Auth;
 using comercializadora_api.Models.Common;
-using comercializadora_api.Services;
+using comercializadora_api.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

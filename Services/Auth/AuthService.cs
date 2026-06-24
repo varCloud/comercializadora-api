@@ -1,9 +1,9 @@
 using comercializadora_api.Models.Auth;
 using comercializadora_api.Models.Common;
-using comercializadora_api.Repositories;
+using comercializadora_api.Repositories.Auth;
 using comercializadora_api.Security;
 
-namespace comercializadora_api.Services
+namespace comercializadora_api.Services.Auth
 {
     /// <summary>
     /// Orquesta el login: valida la credencial vía repositorio (SP_VALIDA_CONTRASENA) y,

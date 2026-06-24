@@ -1,11 +1,34 @@
 using System.Text;
 using System.Text.Json;
-using comercializadora_api.Repositories;
+using comercializadora_api.Repositories.Auth;
 using comercializadora_api.Repositories.Base;
+using comercializadora_api.Pagination;
+using comercializadora_api.Repositories.Compras;
+using comercializadora_api.Repositories.Dashboard;
+using comercializadora_api.Repositories.Estaciones;
+using comercializadora_api.Repositories.LimitesInventario;
+using comercializadora_api.Repositories.LineasProducto;
+using comercializadora_api.Repositories.Productos;
+using comercializadora_api.Repositories.Proveedores;
+using comercializadora_api.Repositories.Ubicaciones;
+using comercializadora_api.Repositories.Usuarios;
 using comercializadora_api.Security;
-using comercializadora_api.Services;
+using comercializadora_api.Services.Auth;
+using comercializadora_api.Services.CodigosBarras;
+using comercializadora_api.Services.Compras;
+using comercializadora_api.Services.Dashboard;
+using comercializadora_api.Services.Estaciones;
+using comercializadora_api.Services.LimitesInventario;
+using comercializadora_api.Services.LineasProducto;
+using comercializadora_api.Services.Productos;
+using comercializadora_api.Services.Proveedores;
+using comercializadora_api.Services.Ubicaciones;
+using comercializadora_api.Services.Usuarios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+
+// Licencia Community de QuestPDF (gratuita para empresas < 1M USD/año). Debe fijarse al arrancar.
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +53,29 @@ builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
 // Repositorios y servicios de dominio.
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
+builder.Services.AddScoped<IUsuariosService, UsuariosService>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IEstacionesRepository, EstacionesRepository>();
+builder.Services.AddScoped<IEstacionesService, EstacionesService>();
+builder.Services.AddScoped<IProveedoresRepository, ProveedoresRepository>();
+builder.Services.AddScoped<IProveedoresService, ProveedoresService>();
+builder.Services.AddScoped<IProductosRepository, ProductosRepository>();
+builder.Services.AddScoped<IProductosService, ProductosService>();
+builder.Services.AddScoped<ILineasProductoRepository, LineasProductoRepository>();
+builder.Services.AddScoped<ILineasProductoService, LineasProductoService>();
+builder.Services.AddScoped<ILimitesInventarioRepository, LimitesInventarioRepository>();
+builder.Services.AddScoped<ILimitesInventarioService, LimitesInventarioService>();
+builder.Services.AddScoped<IComprasRepository, ComprasRepository>();
+builder.Services.AddScoped<IComprasService, ComprasService>();
+builder.Services.AddScoped<IUbicacionesRepository, UbicacionesRepository>();
+builder.Services.AddScoped<IUbicacionesService, UbicacionesService>();
+builder.Services.AddSingleton<IUbicacionesPdfService, UbicacionesPdfService>();
+builder.Services.AddSingleton<ICodigosBarrasPdfService, CodigosBarrasPdfService>();
+
+// Armado de respuestas paginadas (data/links/meta) a partir de la URL de la request.
+builder.Services.AddSingleton<IPaginationBuilder, PaginationBuilder>();
 
 // Seguridad / JWT.
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
@@ -58,14 +104,12 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-// CORS para el front Angular.
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:4200" };
-
+// CORS para el front Angular. En desarrollo se acepta cualquier origen (el puerto de
+// `ng serve` cambia). No se usan credenciales: el JWT viaja en el header Authorization.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicy, policy =>
-        policy.WithOrigins(allowedOrigins)
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod());
 });

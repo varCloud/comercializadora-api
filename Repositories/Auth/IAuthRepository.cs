@@ -1,7 +1,7 @@
 using comercializadora_api.Models.Auth;
 using comercializadora_api.Models.Common;
 
-namespace comercializadora_api.Repositories
+namespace comercializadora_api.Repositories.Auth
 {
     /// <summary>
     /// Acceso a datos de autenticación. Equivale al LoginDAO del backend legado.

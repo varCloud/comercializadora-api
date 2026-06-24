@@ -4,7 +4,7 @@ using comercializadora_api.Models.Auth;
 using comercializadora_api.Models.Common;
 using comercializadora_api.Repositories.Base;
 
-namespace comercializadora_api.Repositories
+namespace comercializadora_api.Repositories.Auth
 {
     /// <summary>
     /// Repositorio de autenticación. Envuelve SP_VALIDA_CONTRASENA con Dapper.

@@ -8,3 +8,7 @@
 - [Subagentes de migración](subagentes-migracion.md) — `.claude/agents/`: migrador-modulo-backend → revisor-backend.
 - [BD local de desarrollo](bd-local-desarrollo.md) — instancia localhost\SQLEXPRESS01, base DB_A57E86_comercializadora, sa (password en User Secrets); contrato de SP_VALIDA_CONTRASENA.
 - [Convenciones de endpoints](convenciones-endpoints.md) — verbos HTTP correctos, controladores devuelven entidad/Notificacion<T> (no IActionResult), JSON camelCase.
+- [Dapper: mapeo de columnas](dapper-mapeo-columnas.md) — Dapper no estripa `_` (aliasar en SP); SP legados de catálogo traen status+datos en un resultset con lookup case-sensitive (normalizar a dict OrdinalIgnoreCase).
+- [Módulo Usuarios migrado](modulo-usuarios.md) — CRUD+catálogos+paginación; SP_V2_CONSULTA_USUARIOS idempotente en store-procedures/; endpoints api/usuarios [Authorize].
+- [Módulo Dashboard migrado](modulo-dashboard.md) — 8 endpoints GET api/dashboard [Authorize]; kpis compuesto; filtro estación por rol leído del JWT (claim idEstacion); 7 SP reusados sin modificar.
+- [Módulo Productos migrado](modulo-productos.md) — CRUD catálogo api/productos [Authorize]; SP_V2 paginado + artículo/código separados + claves SAT; incluye submenú "Líneas de producto" (módulo dedicado api/lineas-producto, SP_V2 con unicidad y bloqueo de baja).
