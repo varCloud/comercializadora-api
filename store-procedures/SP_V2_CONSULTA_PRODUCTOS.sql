@@ -9,7 +9,8 @@
  administración de Productos (Fase A):
    - Paginación server-side con OFFSET/FETCH (@pageNumber, @pageSize).
    - Búsqueda libre (@search) por descripción / artículo / código de barras.
-   - Filtro opcional por línea de producto (@idLineaProducto).
+   - Filtro opcional por línea de producto (@idLineaProducto) o por varias líneas
+     (@idLineasProducto, CSV p.ej. '12,20' — usado por Relación Liquidos; compat-120 safe).
    - @idProducto > 0 = obtener uno (para precargar el form de edición).
    - Orden dinámico (@order + @sort) con whitelist (descripcion | articulo);
      default descripcion asc.
@@ -24,13 +25,14 @@
 ===============================================================================
 */
 CREATE OR ALTER PROCEDURE [dbo].[SP_V2_CONSULTA_PRODUCTOS]
-    @idProducto      int = 0,                 -- > 0 = obtener uno; 0 = listar
-    @search          varchar(100) = null,
-    @idLineaProducto int = 0,                 -- 0 = todas
-    @order           varchar(50)  = null,
-    @sort            varchar(4)   = null,     -- 'asc' | 'desc'
-    @pageNumber      int = 1,
-    @pageSize        int = 10
+    @idProducto       int = 0,                 -- > 0 = obtener uno; 0 = listar
+    @search           varchar(100) = null,
+    @idLineaProducto  int = 0,                 -- 0 = todas (filtro por una línea)
+    @idLineasProducto varchar(200) = null,     -- CSV opcional de líneas (p.ej. '12,20'); null/'' = sin filtro
+    @order            varchar(50)  = null,
+    @sort             varchar(4)   = null,     -- 'asc' | 'desc'
+    @pageNumber       int = 1,
+    @pageSize         int = 10
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -51,6 +53,8 @@ BEGIN
         WHERE   p.activo = 1
             AND p.idProducto      = CASE WHEN @idProducto > 0 THEN @idProducto ELSE p.idProducto END
             AND p.idLineaProducto = CASE WHEN @idLineaProducto > 0 THEN @idLineaProducto ELSE p.idLineaProducto END
+            AND (@idLineasProducto IS NULL OR @idLineasProducto = ''
+                 OR ',' + @idLineasProducto + ',' LIKE '%,' + CAST(p.idLineaProducto AS varchar(10)) + ',%')
             AND (@search IS NULL OR @search = ''
                  OR p.descripcion  LIKE '%' + @search + '%'
                  OR p.articulo     LIKE '%' + @search + '%'
@@ -86,6 +90,8 @@ BEGIN
         WHERE   p.activo = 1
             AND p.idProducto      = CASE WHEN @idProducto > 0 THEN @idProducto ELSE p.idProducto END
             AND p.idLineaProducto = CASE WHEN @idLineaProducto > 0 THEN @idLineaProducto ELSE p.idLineaProducto END
+            AND (@idLineasProducto IS NULL OR @idLineasProducto = ''
+                 OR ',' + @idLineasProducto + ',' LIKE '%,' + CAST(p.idLineaProducto AS varchar(10)) + ',%')
             AND (@search IS NULL OR @search = ''
                  OR p.descripcion  LIKE '%' + @search + '%'
                  OR p.articulo     LIKE '%' + @search + '%'

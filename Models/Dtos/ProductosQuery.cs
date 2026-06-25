@@ -10,5 +10,12 @@ namespace comercializadora_api.Models.Dtos
     {
         /// <summary>Filtro por línea de producto (0 = todas).</summary>
         public int IdLineaProducto { get; set; }
+
+        /// <summary>
+        /// Filtro opcional por varias líneas de producto (CSV, p. ej. "12,20"). Cuando viene
+        /// informado, el SP filtra <c>idLineaProducto IN (csv)</c>. Lo usa Relación Liquidos para
+        /// los selectores de producto a granel. null/"" = sin filtro multi-línea.
+        /// </summary>
+        public string? IdLineasProducto { get; set; }
     }
 }

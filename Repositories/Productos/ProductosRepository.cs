@@ -26,6 +26,7 @@ namespace comercializadora_api.Repositories.Productos
             p.Add("@idProducto", 0);
             p.Add("@search", string.IsNullOrWhiteSpace(query.Q) ? null : query.Q.Trim());
             p.Add("@idLineaProducto", query.IdLineaProducto);
+            p.Add("@idLineasProducto", string.IsNullOrWhiteSpace(query.IdLineasProducto) ? null : query.IdLineasProducto.Trim());
             p.Add("@order", query.Order);
             p.Add("@sort", query.Sort);
             p.Add("@pageNumber", query.Page);

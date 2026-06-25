@@ -399,4 +399,8 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+# Secrets de producción: el archivo real con credenciales NO se versiona.
+# Se versiona solo la plantilla appsettings.Production.json.example
+appsettings.Production.json
+
 # End of https://www.toptal.com/developers/gitignore/api/csharp
