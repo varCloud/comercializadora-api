@@ -43,5 +43,15 @@ en la práctica para columnas dinámicas). Si el SP devuelve la cabecera como `E
 - **Al reusar un SP legado sin tocarlo** cuya cabecera es `estatus`: leerlo a mano en el repo
   con `(int)cabecera.estatus` (ver `ProductosRepository.BuscarPorDescripcionAsync` /
   `ObtenerPorCodigoAsync`), no con los helpers `ConsultarAsync`/`ConsultarUnicoAsync`.
+- **Al reusar un SP legado cuya cabecera es `Estatus`/`Mensaje` (PascalCase)** — caso Clientes:
+  `SP_INSERTA_ACTUALIZA_CLIENTES` y `SP_ACTUALIZA_STATUS_CLIENTES` (verificado en BD 2026-07-03).
+  Leerlo con **mapeo tipado** `QueryFirstAsync<Notificacion<string>>` (case-insensitive por
+  propiedad, a diferencia del acceso dinámico); ver `ClientesRepository.EjecutarLegadoPascalAsync`.
+  Ojo: el mapeo tipado solo sirve si la columna se llama igual que la propiedad (`Estatus`);
+  una columna `status` NO mapea a `Estatus` (difieren en más que mayúsculas).
+- **Cabecera con SOLO `status` (sin `mensaje`)** — `SP_FACTURACION_OBTENER_REGIMEN_FISCAL`:
+  `ConsultarAsync` truena al leer `cabecera.mensaje`. Leer la cabecera como
+  `IDictionary<string, object>` y usar `TryGetValue("mensaje", ...)` con fallback
+  (ver `ClientesRepository.ObtenerRegimenesFiscalesAsync`).
 
 Relacionado: convenciones de endpoints, patrón Repository.
