@@ -36,8 +36,8 @@ namespace comercializadora_api.Services.Productos
         public Task<Notificacion<IEnumerable<ClaveSat>>> BuscarClavesSatAsync(string? q, int page, int perPage)
             => _repository.BuscarClavesSatAsync(q, page, perPage);
 
-        public Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineasAsync()
-            => _repository.ObtenerLineasAsync();
+        public Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineasAsync(int? idAlmacen = null)
+            => _repository.ObtenerLineasAsync(idAlmacen);
 
         public Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerUnidadesMedidaAsync()
             => _repository.ObtenerUnidadesMedidaAsync();

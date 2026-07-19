@@ -55,10 +55,14 @@ namespace comercializadora_api.Controllers
             [FromQuery] int perPage = 20)
             => _productosService.BuscarClavesSatAsync(q, page, perPage);
 
-        /// <summary>Catálogo de líneas de producto.</summary>
+        /// <summary>
+        /// Catálogo de líneas de producto. <c>idAlmacen</c> opcional (0/ausente = todas las
+        /// líneas activas); si viene, filtra a las líneas con existencia en ese almacén
+        /// (paridad con <c>ConsultaLineaAlmacen</c> del legado, feature consumo_mpl).
+        /// </summary>
         [HttpGet("catalogos/lineas")]
-        public Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineas()
-            => _productosService.ObtenerLineasAsync();
+        public Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineas([FromQuery] int? idAlmacen = null)
+            => _productosService.ObtenerLineasAsync(idAlmacen);
 
         /// <summary>Catálogo de unidades de medida.</summary>
         [HttpGet("catalogos/unidades-medida")]

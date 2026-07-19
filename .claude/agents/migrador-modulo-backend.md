@@ -2,6 +2,7 @@
 name: migrador-modulo-backend
 description: Porta un módulo del back-end legado lluviaBackEnd (.NET Framework, DAO + entidades + stored procedures) al proyecto comercializadora-api (.NET 10) usando el patrón Repository ligero + Dapper + SP. Úsalo cuando se pida migrar un módulo/entidad concreta (Clientes, Productos, Login, etc.).
 tools: Read, Write, Edit, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Migrador de módulo back-end (legacy → .NET 10)

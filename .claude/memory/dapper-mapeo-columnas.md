@@ -54,4 +54,13 @@ en la práctica para columnas dinámicas). Si el SP devuelve la cabecera como `E
   `IDictionary<string, object>` y usar `TryGetValue("mensaje", ...)` con fallback
   (ver `ClientesRepository.ObtenerRegimenesFiscalesAsync`).
 
+## 5. Un mismo SP legado mezcla `mensaje`/`Mensaje` entre su propia rama éxito/error
+Caso `SP_FACTURACION_OBTENER_DATOS_FACTURA`/`SP_FACTURACION_OBTENER_DETALLE_VENTA`: la rama de
+error hace `select -1 Estatus, '...' as mensaje` (minúscula) y la de éxito
+`SELECT 200 Estatus, 'OK' Mensaje` (PascalCase) — el mismo SP no es consistente ni consigo
+mismo. Ni el acceso dinámico (`cabecera.mensaje`, case-sensitive) ni el mapeo tipado a secas son
+100% seguros aquí. Solución usada (`FacturaRepository.LeerCabecera`): leer la fila como
+`Dictionary<string, object>(..., StringComparer.OrdinalIgnoreCase)` SIEMPRE que el SP no sea un
+`SP_V2` propio (que si emite `status`/`mensaje` consistentes se lee con los helpers normales).
+
 Relacionado: convenciones de endpoints, patrón Repository.

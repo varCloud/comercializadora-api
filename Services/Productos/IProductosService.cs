@@ -15,7 +15,7 @@ namespace comercializadora_api.Services.Productos
         Task<Notificacion<Producto>> ObtenerPorCodigoAsync(string codigo);
         Task<Notificacion<IEnumerable<Producto>>> ObtenerPorLineaAsync(int idLineaProducto);
         Task<Notificacion<IEnumerable<ClaveSat>>> BuscarClavesSatAsync(string? q, int page, int perPage);
-        Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineasAsync();
+        Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineasAsync(int? idAlmacen = null);
         Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerUnidadesMedidaAsync();
         Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerUnidadesCompraAsync();
         Task<Notificacion<PreciosProducto>> ObtenerPreciosAsync(int idProducto);

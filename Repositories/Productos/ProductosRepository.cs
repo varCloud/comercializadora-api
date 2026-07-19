@@ -213,8 +213,34 @@ namespace comercializadora_api.Repositories.Productos
             return EjecutarAsync("SP_INSERTA_ACTUALIZA_RANGOS_PRECIOS", p);
         }
 
-        public Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineasAsync()
-            => ConsultarCatalogoTipoAsync("lineas");
+        public async Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineasAsync(int? idAlmacen = null)
+        {
+            if (idAlmacen is null or 0)
+                return await ConsultarCatalogoTipoAsync("lineas");
+
+            // SP legado SP_OBTENER_LINEAS_ALMACEN: sin cabecera status/mensaje, un solo resultset
+            // (contador, idLineaProducto, idAlmacen, descripcion). Se envuelve en Notificacion
+            // aquí, mismo precedente que LimitesInventarioRepository.ObtenerEstatusAsync.
+            var p = new DynamicParameters();
+            p.Add("@idAlmacen", idAlmacen);
+
+            using IDbConnection db = CreateConnection();
+            var filas = (await db.QueryAsync(
+                "SP_OBTENER_LINEAS_ALMACEN", p, commandType: CommandType.StoredProcedure)).ToList();
+
+            return new Notificacion<IEnumerable<CatalogoItem>>
+            {
+                Estatus = 200,
+                Mensaje = "OK",
+                Modelo = filas
+                    .Select(f => new CatalogoItem
+                    {
+                        Id = (int)f.idLineaProducto,
+                        Descripcion = (string?)f.descripcion
+                    })
+                    .ToList()
+            };
+        }
 
         public Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerUnidadesMedidaAsync()
             => ConsultarCatalogoTipoAsync("unidades-medida");

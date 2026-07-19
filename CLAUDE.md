@@ -80,6 +80,9 @@ URLs en desarrollo (ver `Properties/launchSettings.json`):
 - Convenciones de endpoints (verbos HTTP correctos, controladores devuelven la entidad no
   `IActionResult`, JSON camelCase global) en
   [`.claude/arquitectura/convenciones-api.md`](.claude/arquitectura/convenciones-api.md).
+- Exportación transversal a Excel (regla de umbral descarga-vs-correo, cola en memoria,
+  gap de correo de usuario) en
+  [`.claude/arquitectura/exportacion-reportes.md`](.claude/arquitectura/exportacion-reportes.md).
 
 ## Agentes
 

@@ -35,8 +35,14 @@ namespace comercializadora_api.Repositories.Productos
         /// <summary>Búsqueda servidor de claves SAT (FactCatClaveProdServicio, paginada).</summary>
         Task<Notificacion<IEnumerable<ClaveSat>>> BuscarClavesSatAsync(string? q, int page, int perPage);
 
-        /// <summary>Catálogo de líneas de producto.</summary>
-        Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineasAsync();
+        /// <summary>
+        /// Catálogo de líneas de producto. Sin <paramref name="idAlmacen"/> (o 0) trae todas las
+        /// líneas activas (SP_V2_CONSULTA_CATALOGOS_PRODUCTO); con <paramref name="idAlmacen"/>
+        /// filtra a las líneas con existencia en ese almacén (SP_OBTENER_LINEAS_ALMACEN legado,
+        /// reusado tal cual — paridad con <c>ConsultaLineaAlmacen</c> del legado, feature
+        /// consumo_mpl).
+        /// </summary>
+        Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerLineasAsync(int? idAlmacen = null);
 
         /// <summary>Catálogo de unidades de medida.</summary>
         Task<Notificacion<IEnumerable<CatalogoItem>>> ObtenerUnidadesMedidaAsync();
