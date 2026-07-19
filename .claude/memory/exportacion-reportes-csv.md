@@ -25,14 +25,29 @@ Gotcha real: si la cuenta de Gmail tiene 2FA, la contraseña de `Smtp:Contrasena
 **App Password** (`myaccount.google.com/apppasswords`), no la contraseña normal — probablemente
 `contrasenaProveedor` del legado ya es una App Password, reusable tal cual en User Secrets.
 
-**Gap detectado y solo parcialmente resuelto:** ni el JWT ni `Usuario` tenían correo. Se agregó
-`Usuario.Correo` (nullable) a la entidad, pero **ningún SP lo alimenta todavía** — falta agregar
-la columna/alias en `SP_V2_CONSULTA_USUARIOS`. Hasta entonces, `Correo` llega `null` y los
-controllers que exporten deben devolver error de negocio explícito (no fallar silenciosamente).
+**Gap RESUELTO (2026-07-19), no era lo que parecía:** se había agregado `Usuario.Correo`
+(nullable) especulativamente, asumiendo que el destinatario debía ser el correo del usuario que
+solicita el reporte. Al debuguear el 400 real en `reporte_ventas`, se investigó el legado
+(`Utilerias/Email.cs`) y se confirmó que **la tabla `Usuarios` nunca tuvo columna de correo, ni
+en el legado** — y que el legado tampoco lo necesitaba: `EnviarCorreoConAdjunto` (único flujo de
+email de reportes del legado) mandaba siempre a una lista fija (`correoCCFacturas` en
+`Web.config`) por Bcc, nunca al correo de quien pidió el reporte. Se **eliminó `Usuario.Correo`**
+(campo muerto) y se reemplazó por `ExportacionOptions.CorreoDestino`
+(`IReadOnlyList<string>`, sección `Exportacion`, valores reales en User Secrets): el primer
+correo es el destinatario (`DestinatarioExportacion.Correo`), el resto va como Bcc
+(`CopiasOcultas`). `IEmailService.EnviarAsync`/`ExportacionService.ExportarAsync` ya soportaban
+Bcc pero no se usaba desde este flujo; ahora sí. Los 3 controllers que resuelven destinatario
+(`ReportesVentasController`, `ReportesInventarioController`, `InventarioFisicoController`, código
+duplicado idéntico en los 3) se actualizaron igual. Detalle en
+`.claude/arquitectura/exportacion-reportes.md` (sección "Resuelto 2026-07-19").
 
 Primer consumidor real: `InventarioFisicoController.ExportarAjustes`
 (`GET api/inventario-fisico/{id}/ajustes/exportar`), reusando los ajustes ya consultados por
 `ObtenerAjustesAsync` (no agrega query nueva).
 
-**Pendiente de wiring real:** `Smtp:Usuario`/`Smtp:Contrasena` deben cargarse vía User Secrets
-antes de que el envío de correo funcione en desarrollo/producción.
+**Wiring real ya configurado (2026-07-19, User Secrets, dev):** `Smtp:Usuario`/`Contrasena`/
+`RemitenteCorreo` = cuenta Gmail real del legado (`comercializadoralluviadev@gmail.com`, misma
+App Password que `contrasenaProveedor` en el `Web.config` legado — confirma que sí es una App
+Password reusable). `Exportacion:CorreoDestino:0`/`:1` = los mismos 2 correos de
+`correoCCFacturas` legado. Antes de este fix ningún envío real había sido posible (credenciales
+vacías + bloqueo previo del destinatario).

@@ -16,6 +16,25 @@ Trabajas **un módulo a la vez** (la entidad/agregado que te indiquen).
 - **Arquitectura destino:** `.claude/arquitectura/patron-repository.md` (léela siempre).
 - **Reglas del repo:** `CLAUDE.md` y memorias en `.claude/memory/`.
 
+## Explora con CodeGraph antes que Grep/Read (ahorro de tokens)
+Ambos repos (`comercializadora-api` y el legado `E:\Documents\GitHub\comercializadora`) tienen
+índice CodeGraph (`.codegraph/`). **Antes de Grep/Glob/Read en bucle**, usa la herramienta MCP
+`codegraph_explore` (o `codegraph explore "<términos>"` por CLI si el MCP no está disponible)
+pasando `projectPath` con la raíz que corresponda:
+- Para el DAO/entidad/SP legado: `codegraph_explore` con `projectPath` =
+  `E:\Documents\GitHub\comercializadora` y la consulta (nombre del DAO/controller/SP en
+  lenguaje natural o por símbolo, ej. `"XxxDAO ObtenerXxx SP_CONSULTA_XXX"`). Te devuelve el
+  código fuente relevante ya con line numbers + call paths en una sola llamada — no leas el
+  `.cs`/`.cshtml`/`.js` completo si `codegraph_explore` ya te dio lo que necesitas.
+- Para entender un patrón ya migrado en este repo (otro Repository/Controller similar):
+  `projectPath` = raíz de `comercializadora-api` (o omite `projectPath` si ya estás posicionado
+  aquí).
+- Si `codegraph_explore` no cubre lo que buscas (p. ej. un fragmento de SQL dentro de un SP, o
+  quieres el archivo completo), cae a Grep/Read quirúrgico como hasta ahora — CodeGraph es el
+  primer intento, no el único recurso.
+- Tras tus propios cambios en este repo, el watcher sincroniza el índice solo; no corras
+  `codegraph sync` salvo que veas resultados obviamente desactualizados.
+
 ## Proceso para migrar un módulo `Xxx`
 1. **Localiza el origen.** Encuentra `XxxDAO.cs`, sus entidades en `lluviaBackEndEntidades`
    y los nombres de los stored procedures que invoca. Anota parámetros y resultsets.

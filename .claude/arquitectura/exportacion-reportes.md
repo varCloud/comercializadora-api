@@ -69,15 +69,26 @@ Si el correo del legado ya funciona hoy, lo más seguro es que `contrasenaProvee
 `Web.config` **ya sea** una App Password (no la contraseña real de la cuenta) — reusar el mismo
 valor en User Secrets debería funcionar sin gestionar nada nuevo en la cuenta de Google.
 
-## Gap conocido: no existe correo de usuario todavía
+## Resuelto (2026-07-19): el destinatario NUNCA fue el correo del usuario
 
-Ni el JWT (`JwtTokenGenerator`) ni la entidad `Usuario` exponían correo. Se agregó
-`Usuario.Correo` (nullable) como preparación, pero **ningún SP lo alimenta aún** — hace falta
-agregar la columna/alias en `SP_V2_CONSULTA_USUARIOS` (y en la tabla origen si no existe) antes
-de que el envío diferido funcione con datos reales. Mientras tanto, los controllers que llamen
-`IExportacionService` deben resolver el destinatario vía `IUsuariosService.ObtenerPorIdAsync` y
-devolver un error de negocio claro si `Correo` viene vacío (ver `InventarioFisicoController.
-ExportarAjustes` → `ResolverDestinatarioAsync`), en vez de fallar silenciosamente en el envío.
+Se investigó el legado (`Utilerias/Email.cs`) para resolver este gap: la tabla `Usuarios` real
+**nunca tuvo columna de correo** (ni en el legado ni en la migración — se había agregado
+`Usuario.Correo` como preparación especulativa, pero ningún SP la alimentaba; se **eliminó**).
+El legado tampoco lo necesitaba: `EnviarCorreoConAdjunto` (el único flujo de email de reportes
+en el legado, usado por `generaCSVInventario`/`ReporteGeneral`) **nunca resolvía el correo del
+usuario logueado** — enviaba siempre a una lista de distribución fija vía Bcc
+(`correoCCFacturas` en `Web.config`, sin `.To` de nadie en particular), desde la cuenta
+`correoProveedor`.
+
+La migración reproduce ese mismo criterio con **`ExportacionOptions.CorreoDestino`**
+(`IReadOnlyList<string>`, sección `Exportacion` — configurar en User Secrets, no versionar):
+el primer correo de la lista es el destinatario principal (`DestinatarioExportacion.Correo`),
+el resto va como Bcc (`DestinatarioExportacion.CopiasOcultas`, ver `IEmailService.EnviarAsync`).
+Cada controller que llama `IExportacionService` resuelve `NombreCompleto` vía
+`IUsuariosService.ObtenerPorIdAsync` (solo para personalizar el saludo del correo) y toma
+`Correo`/`CopiasOcultas` de `ExportacionOptions.CorreoDestino` — nunca de `Usuario`. Si la lista
+está vacía, error de negocio 400 claro (ver `ResolverDestinatarioAsync` en
+`ReportesVentasController`/`ReportesInventarioController`/`InventarioFisicoController`).
 
 ## Ejemplo de consumo
 

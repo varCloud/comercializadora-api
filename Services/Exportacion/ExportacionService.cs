@@ -58,8 +58,9 @@ namespace comercializadora_api.Services.Exportacion
                     destinatario.Correo,
                     asunto: $"Reporte: {nombreReporte}",
                     cuerpo: $"Hola {destinatario.NombreCompleto}, adjunto el reporte '{nombreReporte}' que solicitaste.",
-                    adjunto: new EmailAdjunto(nombreArchivo, archivo, ContentTypeCsv),
-                    ct);
+                    adjuntos: new[] { new EmailAdjunto(nombreArchivo, archivo, ContentTypeCsv) },
+                    copiaOculta: destinatario.CopiasOcultas,
+                    cancellationToken: ct);
             });
 
             return ResultadoExportacion.Diferido(destinatario.Correo);

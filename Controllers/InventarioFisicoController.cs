@@ -7,6 +7,7 @@ using comercializadora_api.Services.InventariosFisicos;
 using comercializadora_api.Services.Usuarios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace comercializadora_api.Controllers
 {
@@ -27,17 +28,20 @@ namespace comercializadora_api.Controllers
         private readonly IPaginationBuilder _pagination;
         private readonly IExportacionService _exportacion;
         private readonly IUsuariosService _usuarios;
+        private readonly ExportacionOptions _exportacionOpciones;
 
         public InventarioFisicoController(
             IInventarioFisicoService service,
             IPaginationBuilder pagination,
             IExportacionService exportacion,
-            IUsuariosService usuarios)
+            IUsuariosService usuarios,
+            IOptions<ExportacionOptions> exportacionOpciones)
         {
             _service = service;
             _pagination = pagination;
             _exportacion = exportacion;
             _usuarios = usuarios;
+            _exportacionOpciones = exportacionOpciones.Value;
         }
 
         /// <summary>Listado paginado de la sucursal del usuario. Query: page, perPage, idTipoInventario, fechaIni, fechaFin, order, sort.</summary>
@@ -90,7 +94,7 @@ namespace comercializadora_api.Controllers
                 return BadRequest(new Notificacion<string>
                 {
                     Estatus = 400,
-                    Mensaje = "El usuario no tiene correo registrado; no es posible exportar (se necesita para el envío diferido).",
+                    Mensaje = "No hay destinatario de exportación configurado (Exportacion:CorreoDestino); no es posible exportar (se necesita para el envío diferido).",
                 });
 
             var datos = (ajustes.Modelo ?? Enumerable.Empty<AjusteInventarioFisico>()).ToList();
@@ -114,14 +118,29 @@ namespace comercializadora_api.Controllers
         };
 
         /// <summary>Resuelve nombre/correo del usuario autenticado; null si no tiene correo registrado.</summary>
+        /// <summary>
+        /// Resuelve nombre del usuario autenticado (para personalizar el cuerpo del correo) +
+        /// destinatario(s) del envío diferido. El correo NUNCA sale de <c>Usuario</c> (esa columna
+        /// no existe, ni existió en el legado): sale de <see cref="ExportacionOptions.CorreoDestino"/>
+        /// (mismo criterio que <c>correoCCFacturas</c> del legado — lista fija, no personal). Null
+        /// si no hay ningún destino configurado.
+        /// </summary>
         private async Task<DestinatarioExportacion?> ResolverDestinatarioAsync()
         {
-            var idUsuario = Claim("idUsuario");
-            var usuario = await _usuarios.ObtenerPorIdAsync(idUsuario);
-            if (!usuario.EsExitoso || string.IsNullOrWhiteSpace(usuario.Modelo?.Correo))
+            if (_exportacionOpciones.CorreoDestino.Count == 0)
                 return null;
 
-            return new DestinatarioExportacion(idUsuario, usuario.Modelo.NombreCompleto ?? usuario.Modelo.NombreUsuario ?? "Usuario", usuario.Modelo.Correo);
+            var idUsuario = Claim("idUsuario");
+            var usuario = await _usuarios.ObtenerPorIdAsync(idUsuario);
+            var nombreCompleto = usuario.EsExitoso
+                ? usuario.Modelo?.NombreCompleto ?? usuario.Modelo?.NombreUsuario ?? "Usuario"
+                : "Usuario";
+
+            return new DestinatarioExportacion(
+                idUsuario,
+                nombreCompleto,
+                _exportacionOpciones.CorreoDestino[0],
+                _exportacionOpciones.CorreoDestino.Skip(1).ToList());
         }
 
         /// <summary>Claim numérico del JWT (0 si ausente o inválido).</summary>

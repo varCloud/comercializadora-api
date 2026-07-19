@@ -404,3 +404,8 @@ FodyWeavers.xsd
 appsettings.Production.json
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp
+# Local AI runtime state
+.atl/
+
+# CodeGraph local index (gentle-ai)
+.codegraph/
