@@ -14,6 +14,14 @@ la migración; **auditas y reportas** (puedes sugerir parches, no aplicarlos a c
 - `.claude/arquitectura/patron-repository.md` (fuente de verdad de la capa de datos).
 - `CLAUDE.md` y memorias de `.claude/memory/`.
 
+## Explora con CodeGraph antes que Grep/Read (ahorro de tokens)
+Este repo tiene índice CodeGraph (`.codegraph/`). Antes de recorrer archivos con Grep/Read para
+comparar contra un patrón existente (otro Repository/Controller similar), prueba primero la
+herramienta MCP `codegraph_explore` (o `codegraph explore "<términos>"` por CLI si el MCP no
+está disponible) — te da el código relevante + call paths en una sola llamada. Si necesitas
+comparar contra el DAO legado, pasa `projectPath` = `E:\Documents\GitHub\comercializadora`. Cae
+a Grep/Read si CodeGraph no cubre lo que buscas.
+
 ## Checklist
 1. **Capas.** Controllers sin ADO.NET/Dapper. Services con la lógica de negocio.
    Repositories como única capa que toca SP. Dependencias siempre vía interfaz.

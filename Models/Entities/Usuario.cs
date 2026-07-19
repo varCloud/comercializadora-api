@@ -23,13 +23,6 @@ namespace comercializadora_api.Models.Entities
         [JsonIgnore]
         public string? Contrasena { get; set; }
 
-        /// <summary>
-        /// Correo del usuario, para envío de reportes diferidos (ver <c>IExportacionService</c>).
-        /// PENDIENTE: hoy ningún SP de Usuarios expone esta columna; hay que agregarla a
-        /// SP_V2_CONSULTA_USUARIOS (y a la tabla origen) antes de que este campo llegue con dato real.
-        /// </summary>
-        public string? Correo { get; set; }
-
         public string? Telefono { get; set; }
         public int IdAlmacen { get; set; }
         public int IdSucursal { get; set; }
