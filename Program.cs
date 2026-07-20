@@ -22,6 +22,7 @@ using comercializadora_api.Repositories.Proveedores;
 using comercializadora_api.Repositories.RelacionLiquidos;
 using comercializadora_api.Repositories.RelacionTrapeadores;
 using comercializadora_api.Repositories.ReportesInventario;
+using comercializadora_api.Repositories.ReportesMerma;
 using comercializadora_api.Repositories.ReportesVentas;
 using comercializadora_api.Repositories.TiposCliente;
 using comercializadora_api.Repositories.Ubicaciones;
@@ -50,6 +51,7 @@ using comercializadora_api.Services.Proveedores;
 using comercializadora_api.Services.RelacionLiquidos;
 using comercializadora_api.Services.RelacionTrapeadores;
 using comercializadora_api.Services.ReportesInventario;
+using comercializadora_api.Services.ReportesMerma;
 using comercializadora_api.Services.ReportesVentas;
 using comercializadora_api.Services.TiposCliente;
 using comercializadora_api.Services.Ubicaciones;
@@ -127,6 +129,8 @@ builder.Services.AddScoped<IInventarioReporteRepository, InventarioReporteReposi
 builder.Services.AddScoped<IInventarioReporteService, InventarioReporteService>();
 builder.Services.AddScoped<IVentaReporteRepository, VentaReporteRepository>();
 builder.Services.AddScoped<IVentaReporteService, VentaReporteService>();
+builder.Services.AddScoped<IMermaReporteRepository, MermaReporteRepository>();
+builder.Services.AddScoped<IMermaReporteService, MermaReporteService>();
 builder.Services.AddSingleton<IUbicacionesPdfService, UbicacionesPdfService>();
 builder.Services.AddSingleton<ICodigosBarrasPdfService, CodigosBarrasPdfService>();
 

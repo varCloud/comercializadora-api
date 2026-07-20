@@ -14,8 +14,9 @@ namespace comercializadora_api.Services.Exportacion
         /// que solicitaba el reporte (esa columna no existe en <c>Usuarios</c>, ni existió) — todo
         /// se enviaba a una lista de distribución fija configurada por ambiente. El primer correo
         /// de la lista va como destinatario principal (To); el resto como copia oculta (Bcc).
-        /// Configurar en <c>appsettings.{Environment}.json</c>, vacío deshabilita el envío diferido
-        /// con un error de negocio claro (ver <c>ResolverDestinatarioAsync</c> en cada controller).
+        /// Configurar en User Secrets (<c>Exportacion:CorreoDestino</c>); vacío deshabilita el
+        /// envío diferido con un error de negocio claro (ver <c>ResolverDestinatarioAsync</c> en
+        /// cada controller).
         /// </summary>
         public IReadOnlyList<string> CorreoDestino { get; set; } = Array.Empty<string>();
     }
