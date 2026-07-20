@@ -140,8 +140,8 @@ namespace comercializadora_api.Controllers
             return new DestinatarioExportacion(
                 idUsuario,
                 nombreCompleto,
-                _exportacionOpciones.CorreoDestino[1],
-                _exportacionOpciones.CorreoDestino.ToList());
+                _exportacionOpciones.CorreoDestino[0],
+                _exportacionOpciones.CorreoDestino.Skip(1).ToList());
         }
 
         /// <summary>Claim numérico del JWT (0 si ausente o inválido).</summary>
